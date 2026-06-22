@@ -2,6 +2,7 @@
 
 ### Navigate Global Exchange Rates with Ease
 
+🚀 **Live Demo:** https://kaustubhdeshmane.github.io/CurrencyPilot/
 A modern real-time currency converter supporting 30+ international currencies with live exchange rates.
 
 ---
