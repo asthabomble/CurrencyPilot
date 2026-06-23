@@ -16,59 +16,141 @@ const resultUpdateTime = document.getElementById("resultUpdateTime");
 const themeBtnLight = document.getElementById("themeBtnLight");
 const themeBtnDark = document.getElementById("themeBtnDark");
 
-const currencies = [
-"USD","INR","EUR","GBP","JPY","AUD","CAD","CHF",
-"CNY","SGD","HKD","NZD","SEK","KRW","NOK","MXN",
-"BRL","RUB","ZAR","TRY","AED","SAR","THB","IDR",
-"MYR","PHP","PKR","BDT","LKR","NPR"
-];
-
-// Country flags unicode emojis mapping
-const currencyFlags = {
-    USD: "🇺🇸", INR: "🇮🇳", EUR: "🇪🇺", GBP: "🇬🇧", JPY: "🇯🇵", AUD: "🇦🇺", CAD: "🇨🇦", CHF: "🇨🇭",
-    CNY: "🇨🇳", SGD: "🇸🇬", HKD: "🇭🇰", NZD: "🇳🇿", SEK: "🇸🇪", KRW: "🇰🇷", NOK: "🇳🇴", MXN: "🇲🇽",
-    BRL: "🇧🇷", RUB: "🇷🇺", ZAR: "🇿🇦", TRY: "🇹🇷", AED: "🇦🇪", SAR: "🇸🇦", THB: "🇹🇭", IDR: "🇮🇩",
-    MYR: "🇲🇾", PHP: "🇵🇭", PKR: "🇵🇰", BDT: "🇧🇩", LKR: "🇱🇰", NPR: "🇳🇵"
+const currencyInfo = {
+    USD: { flag: "🇺🇸", name: "US Dollar", symbol: "$" },
+    INR: { flag: "🇮🇳", name: "Indian Rupee", symbol: "₹" },
+    EUR: { flag: "🇪🇺", name: "Euro", symbol: "€" },
+    GBP: { flag: "🇬🇧", name: "British Pound", symbol: "£" },
+    JPY: { flag: "🇯🇵", name: "Japanese Yen", symbol: "¥" },
+    AUD: { flag: "🇦🇺", name: "Australian Dollar", symbol: "A$" },
+    CAD: { flag: "🇨🇦", name: "Canadian Dollar", symbol: "C$" },
+    CHF: { flag: "🇨🇭", name: "Swiss Franc", symbol: "CHF" },
+    CNY: { flag: "🇨🇳", name: "Chinese Yuan", symbol: "¥" },
+    SGD: { flag: "🇸🇬", name: "Singapore Dollar", symbol: "S$" },
+    HKD: { flag: "🇭🇰", name: "Hong Kong Dollar", symbol: "HK$" },
+    NZD: { flag: "🇳🇿", name: "New Zealand Dollar", symbol: "NZ$" },
+    SEK: { flag: "🇸🇪", name: "Swedish Krona", symbol: "kr" },
+    KRW: { flag: "🇰🇷", name: "South Korean Won", symbol: "₩" },
+    NOK: { flag: "🇳🇴", name: "Norwegian Krone", symbol: "kr" },
+    MXN: { flag: "🇲🇽", name: "Mexican Peso", symbol: "$" },
+    BRL: { flag: "🇧🇷", name: "Brazilian Real", symbol: "R$" },
+    RUB: { flag: "🇷🇺", name: "Russian Ruble", symbol: "₽" },
+    ZAR: { flag: "🇿🇦", name: "South African Rand", symbol: "R" },
+    TRY: { flag: "🇹🇷", name: "Turkish Lira", symbol: "₺" },
+    AED: { flag: "🇦🇪", name: "UAE Dirham", symbol: "د.إ" },
+    SAR: { flag: "🇸🇦", name: "Saudi Riyal", symbol: "ر.س" },
+    THB: { flag: "🇹🇭", name: "Thai Baht", symbol: "฿" },
+    IDR: { flag: "🇮🇩", name: "Indonesian Rupiah", symbol: "Rp" },
+    MYR: { flag: "🇲🇾", name: "Malaysian Ringgit", symbol: "RM" },
+    PHP: { flag: "🇵🇭", name: "Philippine Peso", symbol: "₱" },
+    PKR: { flag: "🇵🇰", name: "Pakistani Rupee", symbol: "₨" },
+    BDT: { flag: "🇧🇩", name: "Bangladeshi Taka", symbol: "৳" },
+    LKR: { flag: "🇱🇰", name: "Sri Lankan Rupee", symbol: "₨" },
+    NPR: { flag: "🇳🇵", name: "Nepalese Rupee", symbol: "₨" },
+    VND: { flag: "🇻🇳", name: "Vietnamese Dong", symbol: "₫" },
+    EGP: { flag: "🇪🇬", name: "Egyptian Pound", symbol: "E£" },
+    ILS: { flag: "🇮🇱", name: "Israeli Shekel", symbol: "₪" },
+    PLN: { flag: "🇵🇱", name: "Polish Zloty", symbol: "zł" },
+    CZK: { flag: "🇨🇿", name: "Czech Koruna", symbol: "Kč" },
+    HUF: { flag: "🇭🇺", name: "Hungarian Forint", symbol: "Ft" },
+    DKK: { flag: "🇩🇰", name: "Danish Krone", symbol: "kr" },
+    RON: { flag: "🇷🇴", name: "Romanian Leu", symbol: "lei" },
+    NGN: { flag: "🇳🇬", name: "Nigerian Naira", symbol: "₦" },
+    KES: { flag: "🇰🇪", name: "Kenyan Shilling", symbol: "KSh" },
+    QAR: { flag: "🇶🇦", name: "Qatari Riyal", symbol: "ر.ق" },
+    KWD: { flag: "🇰🇼", name: "Kuwaiti Dinar", symbol: "د.ك" },
+    OMR: { flag: "🇴🇲", name: "Omani Rial", symbol: "ر.ع." },
+    BHD: { flag: "🇧🇭", name: "Bahraini Dinar", symbol: ".د.ب" },
+    JOD: { flag: "🇯🇴", name: "Jordanian Dinar", symbol: "د.ا" },
+    MAD: { flag: "🇲🇦", name: "Moroccan Dirham", symbol: "د.م." },
+    TND: { flag: "🇹🇳", name: "Tunisian Dinar", symbol: "د.ت" },
+    ARS: { flag: "🇦🇷", name: "Argentine Peso", symbol: "$" },
+    CLP: { flag: "🇨🇱", name: "Chilean Peso", symbol: "$" },
+    COP: { flag: "🇨🇴", name: "Colombian Peso", symbol: "$" },
+    PEN: { flag: "🇵🇪", name: "Peruvian Sol", symbol: "S/." },
+    UAH: { flag: "🇺🇦", name: "Ukrainian Hryvnia", symbol: "₴" },
+    ISK: { flag: "🇮🇸", name: "Icelandic Krona", symbol: "kr" },
+    LBP: { flag: "🇱🇧", name: "Lebanese Pound", symbol: "L£" },
+    GHS: { flag: "🇬🇭", name: "Ghanaian Cedi", symbol: "₵" },
+    ETB: { flag: "🇪🇹", name: "Ethiopian Birr", symbol: "Br" },
+    TZS: { flag: "🇹🇿", name: "Tanzanian Shilling", symbol: "TSh" },
+    UGX: { flag: "🇺🇬", name: "Ugandan Shilling", symbol: "USh" },
+    XOF: { flag: "🇸🇳", name: "West African CFA Franc", symbol: "CFA" },
+    XAF: { flag: "🇨🇲", name: "Central African CFA Franc", symbol: "FCFA" }
 };
 
-// Currency symbols mapping for multi-currency list
-const currencySymbols = {
-    USD: "$", INR: "₹", EUR: "€", GBP: "£", JPY: "¥", AUD: "A$", CAD: "C$", CHF: "CHF",
-    CNY: "¥", SGD: "S$", HKD: "HK$", NZD: "NZ$", SEK: "kr", KRW: "₩", NOK: "kr", MXN: "$",
-    BRL: "R$", RUB: "₽", ZAR: "R", TRY: "₺", AED: "د.إ", SAR: "ر.س", THB: "฿", IDR: "Rp",
-    MYR: "RM", PHP: "₱", PKR: "₨", BDT: "৳", LKR: "₨", NPR: "₨"
+const fallbackCurrencyNames = {
+    AED: "UAE Dirham", AFN: "Afghan Afghani", ALL: "Albanian Lek", AMD: "Armenian Dram",
+    ANG: "Netherlands Antillean Guilder", AOA: "Angolan Kwanza", ARS: "Argentine Peso",
+    AUD: "Australian Dollar", AWG: "Aruban Florin", AZN: "Azerbaijani Manat",
+    BAM: "Bosnia-Herzegovina Convertible Mark", BBD: "Barbadian Dollar", BDT: "Bangladeshi Taka",
+    BGN: "Bulgarian Lev", BHD: "Bahraini Dinar", BIF: "Burundian Franc", BMD: "Bermudian Dollar",
+    BND: "Brunei Dollar", BOB: "Bolivian Boliviano", BRL: "Brazilian Real", BSD: "Bahamian Dollar",
+    BTN: "Bhutanese Ngultrum", BWP: "Botswanan Pula", BYN: "Belarusian Ruble", BZD: "Belize Dollar",
+    CAD: "Canadian Dollar", CDF: "Congolese Franc", CHF: "Swiss Franc", CLP: "Chilean Peso",
+    CNY: "Chinese Yuan", COP: "Colombian Peso", CRC: "Costa Rican Colón", CUP: "Cuban Peso",
+    CVE: "Cape Verdean Escudo", CZK: "Czech Koruna", DJF: "Djiboutian Franc", DKK: "Danish Krone",
+    DOP: "Dominican Peso", DZD: "Algerian Dinar", EGP: "Egyptian Pound", ERN: "Eritrean Nakfa",
+    ETB: "Ethiopian Birr", EUR: "Euro", FJD: "Fijian Dollar", FKP: "Falkland Islands Pound",
+    FOK: "Faroese Króna", GBP: "British Pound", GEL: "Georgian Lari", GGP: "Guernsey Pound",
+    GHS: "Ghanaian Cedi", GIP: "Gibraltar Pound", GMD: "Gambian Dalasi", GNF: "Guinean Franc",
+    GTQ: "Guatemalan Quetzal", GYD: "Guyanese Dollar", HKD: "Hong Kong Dollar", HNL: "Honduran Lempira",
+    HRK: "Croatian Kuna", HTG: "Haitian Gourde", HUF: "Hungarian Forint", IDR: "Indonesian Rupiah",
+    ILS: "Israeli Shekel", IMP: "Isle of Man Pound", INR: "Indian Rupee", IQD: "Iraqi Dinar",
+    IRR: "Iranian Rial", ISK: "Icelandic Krona", JEP: "Jersey Pound", JMD: "Jamaican Dollar",
+    JOD: "Jordanian Dinar", JPY: "Japanese Yen", KES: "Kenyan Shilling", KGS: "Kyrgyzstani Som",
+    KHR: "Cambodian Riel", KID: "Kiribati Dollar", KMF: "Comorian Franc", KRW: "South Korean Won",
+    KWD: "Kuwaiti Dinar", KYD: "Cayman Islands Dollar", KZT: "Kazakhstani Tenge", LAK: "Laotian Kip",
+    LBP: "Lebanese Pound", LKR: "Sri Lankan Rupee", LRD: "Liberian Dollar", LSL: "Lesotho Loti",
+    LYD: "Libyan Dinar", MAD: "Moroccan Dirham", MDL: "Moldovan Leu", MGA: "Malagasy Ariary",
+    MKD: "Macedonian Denar", MMK: "Myanmar Kyat", MNT: "Mongolian Tugrik", MOP: "Macanese Pataca",
+    MRU: "Mauritanian Ouguiya", MUR: "Mauritian Rupee", MVR: "Maldivian Rufiyaa", MWK: "Malawian Kwacha",
+    MXN: "Mexican Peso", MYR: "Malaysian Ringgit", MZN: "Mozambican Metical", NAD: "Namibian Dollar",
+    NGN: "Nigerian Naira", NIO: "Nicaraguan Córdoba", NOK: "Norwegian Krone", NPR: "Nepalese Rupee",
+    NZD: "New Zealand Dollar", OMR: "Omani Rial", PAB: "Panamanian Balboa", PEN: "Peruvian Sol",
+    PGK: "Papua New Guinean Kina", PHP: "Philippine Peso", PKR: "Pakistani Rupee", PLN: "Polish Zloty",
+    PYG: "Paraguayan Guaraní", QAR: "Qatari Riyal", RON: "Romanian Leu", RSD: "Serbian Dinar",
+    RUB: "Russian Ruble", RWF: "Rwandan Franc", SAR: "Saudi Riyal", SBD: "Solomon Islands Dollar",
+    SCR: "Seychelles Rupee", SDG: "Sudanese Pound", SEK: "Swedish Krona", SGD: "Singapore Dollar",
+    SHP: "Saint Helena Pound", SLE: "Sierra Leonean Leone", SLL: "Sierra Leonean Leone", SOS: "Somali Shilling",
+    SRD: "Surinamese Dollar", SSP: "South Sudanese Pound", STN: "São Tomé and Príncipe Dobra",
+    SYP: "Syrian Pound", SZL: "Swazi Lilangeni", THB: "Thai Baht", TJS: "Tajikistani Somoni",
+    TMT: "Turkmenistani Manat", TND: "Tunisian Dinar", TOP: "Tongan Paʻanga", TRY: "Turkish Lira",
+    TTD: "Trinidad and Tobago Dollar", TVD: "Tuvaluan Dollar", TWD: "New Taiwan Dollar",
+    TZS: "Tanzanian Shilling", UAH: "Ukrainian Hryvnia", UGX: "Ugandan Shilling", USD: "US Dollar",
+    UYU: "Uruguayan Peso", UZS: "Uzbekistani Som", VES: "Venezuelan Bolívar Soberano", VND: "Vietnamese Dong",
+    VUV: "Vanuatu Vatu", WST: "Samoan Tala", XAF: "Central African CFA Franc", XCD: "East Caribbean Dollar",
+    XDR: "Special Drawing Rights", XOF: "West African CFA Franc", XPF: "CFP Franc", YER: "Yemeni Rial",
+    ZAR: "South African Rand", ZMW: "Zambian Kwacha", ZWL: "Zimbabwean Dollar", ZWG: "Zimbabwe Gold"
 };
 
-// Currency names mapping for searchable dropdown lists
-const currencyNames = {
-    USD: "US Dollar", INR: "Indian Rupee", EUR: "Euro", GBP: "British Pound", JPY: "Japanese Yen",
-    AUD: "Australian Dollar", CAD: "Canadian Dollar", CHF: "Swiss Franc", CNY: "Chinese Yuan",
-    SGD: "Singapore Dollar", HKD: "Hong Kong Dollar", NZD: "New Zealand Dollar", SEK: "Swedish Krona",
-    KRW: "South Korean Won", NOK: "Norwegian Krone", MXN: "Mexican Peso", BRL: "Brazilian Real",
-    RUB: "Russian Ruble", ZAR: "South African Rand", TRY: "Turkish Lira", AED: "UAE Dirham",
-    SAR: "Saudi Riyal", THB: "Thai Baht", IDR: "Indonesian Rupiah", MYR: "Malaysian Ringgit",
-    PHP: "Philippine Peso", PKR: "Pakistani Rupee", BDT: "Bangladeshi Taka", LKR: "Sri Lankan Rupee",
-    NPR: "Nepalese Rupee"
-};
+let currencies = Object.keys(currencyInfo).sort();
 
 function loadCurrencies(){
+    const prevFrom = fromCurrency.value;
+    const prevTo = toCurrency.value;
+
+    fromCurrency.innerHTML = "";
+    toCurrency.innerHTML = "";
+
     currencies.forEach(currency => {
-        const flag = currencyFlags[currency] || "🏳️";
+        const flag = currencyInfo[currency]?.flag;
+        const text = flag ? `${flag} ${currency}` : currency;
 
         let option1 = document.createElement("option");
         option1.value = currency;
-        option1.textContent = `${flag} ${currency}`;
+        option1.textContent = text;
 
         let option2 = document.createElement("option");
         option2.value = currency;
-        option2.textContent = `${flag} ${currency}`;
+        option2.textContent = text;
 
         fromCurrency.appendChild(option1);
         toCurrency.appendChild(option2);
     });
 
-    fromCurrency.value = "USD";
-    toCurrency.value = "INR";
+    fromCurrency.value = prevFrom || "USD";
+    toCurrency.value = prevTo || "INR";
 }
 
 // CUSTOM DROPDOWNS SETUP FUNCTION
@@ -89,8 +171,8 @@ function setupCustomDropdown(containerId, hiddenSelectId) {
     function buildOptions() {
         optionsList.innerHTML = "";
         currencies.forEach(code => {
-            const flag = currencyFlags[code] || "🏳️";
-            const name = currencyNames[code] || "";
+            const flag = currencyInfo[code]?.flag;
+            const name = currencyInfo[code]?.name || "";
             const isSelected = hiddenSelect.value === code;
 
             const li = document.createElement("li");
@@ -99,13 +181,22 @@ function setupCustomDropdown(containerId, hiddenSelectId) {
             li.setAttribute("aria-selected", isSelected);
             li.setAttribute("data-value", code);
             
-            li.innerHTML = `
-                <span class="option-flag">${flag}</span>
-                <div class="option-details">
-                    <span class="option-code">${code}</span>
-                    <span class="option-name">${name}</span>
-                </div>
-            `;
+            if (flag) {
+                li.innerHTML = `
+                    <span class="option-flag">${flag}</span>
+                    <div class="option-details">
+                        <span class="option-code">${code}</span>
+                        <span class="option-name">${name}</span>
+                    </div>
+                `;
+            } else {
+                li.innerHTML = `
+                    <div class="option-details" style="padding-left: 4px;">
+                        <span class="option-code">${code}</span>
+                        <span class="option-name">${name}</span>
+                    </div>
+                `;
+            }
 
             li.addEventListener("click", (e) => {
                 e.stopPropagation();
@@ -129,9 +220,17 @@ function setupCustomDropdown(containerId, hiddenSelectId) {
     // Synchronize Trigger button UI with hidden select value
     function syncTriggerUI() {
         const val = hiddenSelect.value;
-        const flag = currencyFlags[val] || "🏳️";
-        const name = currencyNames[val] || "";
-        trigger.querySelector(".selected-flag").textContent = flag;
+        const flag = currencyInfo[val]?.flag;
+        const name = currencyInfo[val]?.name || "";
+        
+        const flagEl = trigger.querySelector(".selected-flag");
+        if (flag) {
+            flagEl.textContent = flag;
+            flagEl.style.display = "";
+        } else {
+            flagEl.style.display = "none";
+        }
+        
         trigger.querySelector(".selected-code").textContent = val;
         trigger.querySelector(".selected-name").textContent = name;
 
@@ -199,7 +298,7 @@ function setupCustomDropdown(containerId, hiddenSelectId) {
         
         options.forEach(opt => {
             const code = opt.getAttribute("data-value").toLowerCase();
-            const name = (currencyNames[opt.getAttribute("data-value")] || "").toLowerCase();
+            const name = (currencyInfo[opt.getAttribute("data-value")]?.name || "").toLowerCase();
             
             if (code.includes(query) || name.includes(query)) {
                 opt.style.display = "flex";
@@ -289,11 +388,18 @@ function setupCustomDropdown(containerId, hiddenSelectId) {
     // Initial build and trigger sync
     buildOptions();
     syncTriggerUI();
+
+    return {
+        buildOptions: buildOptions
+    };
 }
 
+let fromDropdownInstance = null;
+let toDropdownInstance = null;
+
 function initCustomDropdowns() {
-    setupCustomDropdown("fromCurrencySelect", "fromCurrency");
-    setupCustomDropdown("toCurrencySelect", "toCurrency");
+    fromDropdownInstance = setupCustomDropdown("fromCurrencySelect", "fromCurrency");
+    toDropdownInstance = setupCustomDropdown("toCurrencySelect", "toCurrency");
 }
 
 // HISTORY FUNCTIONS
@@ -340,14 +446,17 @@ function displayHistory(){
                     const fromCode = fromPart.split(" ")[1];
                     const fromAmt = fromPart.split(" ")[0];
                     
-                    const fromFlag = currencyFlags[fromCode] || "🏳️";
-                    const toFlag = currencyFlags[toCode] || "🏳️";
+                    const fromFlag = currencyInfo[fromCode]?.flag;
+                    const toFlag = currencyInfo[toCode]?.flag;
+                    
+                    const fromFlagHtml = fromFlag ? `<span class="history-flag">${fromFlag}</span>` : '';
+                    const toFlagHtml = toFlag ? `<span class="history-flag">${toFlag}</span>` : '';
                     
                     leftDiv.innerHTML = `
-                        <span class="history-flag">${fromFlag}</span>
+                        ${fromFlagHtml}
                         <span class="history-amount">${fromAmt} ${fromCode}</span>
                         <span class="history-arrow">→</span>
-                        <span class="history-flag">${toFlag}</span>
+                        ${toFlagHtml}
                         <span class="history-currency">${toCode}</span>
                     `;
                 } else {
@@ -571,17 +680,19 @@ function updateMultiCurrency(amountValue, fromCode, rates) {
     multiGrid.innerHTML = "";
     
     activeTargets.forEach(toCode => {
-        const flag = currencyFlags[toCode] || "🏳️";
-        const symbol = currencySymbols[toCode] || "";
+        const flag = currencyInfo[toCode]?.flag;
+        const symbol = currencyInfo[toCode]?.symbol || "";
         const rate = rates[toCode] || 0;
         const converted = amountValue * rate;
         
         const itemDiv = document.createElement("div");
         itemDiv.className = "multi-item";
         
+        const flagHtml = flag ? `<span class="multi-flag">${flag}</span>` : '';
+        
         itemDiv.innerHTML = `
             <div class="multi-header">
-                <span class="multi-flag">${flag}</span>
+                ${flagHtml}
                 <span class="multi-currency-code">${toCode}</span>
             </div>
             <span class="multi-value">${symbol}${converted.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
@@ -639,6 +750,30 @@ function updateAIInsights(from, to, rate) {
     document.getElementById("insightWorst").textContent = `${randomWorst} (-${percentWorst}%)`;
 }
 
+// DYNAMIC API CURRENCIES MERGE
+function mergeAPICurrencies(apiRates) {
+    if (!apiRates) return;
+    const apiCodes = Object.keys(apiRates);
+    let mergedAny = false;
+
+    apiCodes.forEach(code => {
+        if (!currencyInfo[code]) {
+            currencyInfo[code] = {
+                name: fallbackCurrencyNames[code] || `${code} Currency`,
+                symbol: ""
+            };
+            mergedAny = true;
+        }
+    });
+
+    if (mergedAny) {
+        currencies = Object.keys(currencyInfo).sort();
+        loadCurrencies();
+        if (fromDropdownInstance) fromDropdownInstance.buildOptions();
+        if (toDropdownInstance) toDropdownInstance.buildOptions();
+    }
+}
+
 // CONVERSION CORE
 
 async function convertCurrency(saveToHistory = false){
@@ -658,6 +793,10 @@ async function convertCurrency(saveToHistory = false){
     try {
         const response = await fetch(`https://api.exchangerate-api.com/v4/latest/${from}`);
         const data = await response.json();
+        
+        // Dynamically merge extra supported currencies from the API rates response
+        mergeAPICurrencies(data.rates);
+        
         const rate = data.rates[to];
         const converted = value * rate;
 
