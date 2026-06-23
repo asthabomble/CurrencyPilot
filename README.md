@@ -2,7 +2,7 @@
 
 A modern Currency Analytics Dashboard that provides real-time exchange rates, multi-currency conversion, interactive charts, and AI-powered market insights.
 
-Built using HTML, CSS, JavaScript, and Chart.js, CurrencyPilot AI transforms a basic currency converter into a professional fintech-inspired analytics dashboard.
+Built using HTML, CSS, JavaScript, and Chart.js, this project transforms a basic currency converter into a sleek fintech-style dashboard.
 
 🚀 Live Demo
 
@@ -30,17 +30,15 @@ Multi-Currency Conversion
 
 ![Conversion](assets/screenshots/Multi_Currency_Conversion.png)
 
-
 🎯 Key Highlights
 Supports 150+ global currencies
 Real-time exchange rate conversion
-Searchable currency dropdowns with flags
+Searchable currency dropdown with flags
 Interactive exchange rate charts
 AI-powered market insights
 Multi-currency conversion
 Dark and Light themes
-Conversion history with local storage
-
+Conversion history with localStorage
 ✨ Features
 Real-time currency conversion (150+ currencies)
 Auto-conversion while typing
@@ -50,7 +48,6 @@ Interactive Chart.js exchange rate graphs
 AI-powered market insights
 Dark / Light mode support
 Conversion history with localStorage
-
 🛠️ Tech Stack
 HTML5
 CSS3
@@ -58,8 +55,6 @@ JavaScript (Vanilla JS)
 Chart.js
 Exchange Rate API
 LocalStorage
-
-
 📂 Project Structure
 CurrencyPilot/
 │
@@ -67,33 +62,30 @@ CurrencyPilot/
 ├── script.js
 │
 ├── assets/
-│   ├── screenshots/
+│   └── screenshots/
 │        ├── Dashboard.png
 │        ├── ExchangeRateChart.png
 │        ├── AI_Market_Insights.png
 │        ├── SearchableCurrencyDropdown.png
 │        ├── Multi_Currency_Conversion.png
-│   
-├──LICENSE
-└──README.md
-
+│
+├── LICENSE
+└── README.md
 ⚙️ Installation
 git clone https://github.com/asthabomble/CurrencyPilot.git
 cd CurrencyPilot
 
-Then open:
+Open:
 
 index.html
-
-No setup required.
-
 👩‍💻 Author
 
 Astha Bomble
 GitHub: https://github.com/asthabomble
 
 ⭐ Support
-If you like this project, consider giving it a star ⭐
+
+If you like this project, consider giving it a ⭐ on GitHub.
 
 🙏 Acknowledgements
 
