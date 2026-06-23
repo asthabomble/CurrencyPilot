@@ -1,13 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Global Currency Converter</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
+
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 
@@ -18,200 +23,814 @@
     font-family:'Poppins',sans-serif;
 }
 
+:root {
+    --bg-gradient: linear-gradient(135deg, #0f172a, #1e293b, #334155);
+    --container-bg: rgba(30, 41, 59, 0.45);
+    --container-border: rgba(255, 255, 255, 0.08);
+    --text-color: #f8fafc;
+    --secondary-text: #94a3b8;
+    --card-bg: rgba(15, 23, 42, 0.4);
+    --card-border: rgba(255, 255, 255, 0.05);
+    --header-bg: rgba(15, 23, 42, 0.6);
+    --result-bg: rgba(15, 23, 42, 0.3);
+    --result-glow: rgba(56, 189, 248, 0.15);
+    --swap-btn-bg: #38bdf8;
+    --chart-grid-color: rgba(255, 255, 255, 0.05);
+
+    --pill-bg: rgba(0, 0, 0, 0.25);
+    --pill-border: rgba(255, 255, 255, 0.08);
+    --pill-inactive-color: rgba(255, 255, 255, 0.5);
+    --pill-active-bg: #38bdf8;
+    --pill-active-color: #0f172a;
+    --pill-active-glow: rgba(56, 189, 248, 0.35);
+
+    --input-bg: rgba(15, 23, 42, 0.5);
+    --input-color: #f8fafc;
+    --select-bg: rgba(15, 23, 42, 0.5);
+    --select-color: #f8fafc;
+    --select-hover-border: rgba(255, 255, 255, 0.2);
+    --select-hover-bg: rgba(30, 41, 59, 0.6);
+
+    --btn-secondary-bg: rgba(255, 255, 255, 0.05);
+    --btn-secondary-border: rgba(255, 255, 255, 0.08);
+    --btn-secondary-hover-bg: rgba(255, 255, 255, 0.15);
+    --btn-secondary-hover-border: rgba(255, 255, 255, 0.3);
+}
+
+[data-theme="light"] {
+    --bg-gradient: linear-gradient(135deg, #dbeafe, #e0f2fe, #f8fafc);
+    --container-bg: rgba(255, 255, 255, 0.7);
+    --container-border: rgba(15, 23, 42, 0.08);
+    --text-color: #0f172a;
+    --secondary-text: #475569;
+    --card-bg: rgba(255, 255, 255, 0.6);
+    --card-border: rgba(15, 23, 42, 0.05);
+    --header-bg: rgba(255, 255, 255, 0.85);
+    --result-bg: rgba(255, 255, 255, 0.5);
+    --result-glow: rgba(2, 132, 199, 0.08);
+    --swap-btn-bg: #0284c7;
+    --chart-grid-color: rgba(0, 0, 0, 0.05);
+
+    --pill-bg: rgba(15, 23, 42, 0.06);
+    --pill-border: rgba(15, 23, 42, 0.05);
+    --pill-inactive-color: rgba(15, 23, 42, 0.6);
+    --pill-active-bg: #ffffff;
+    --pill-active-color: #0f172a;
+    --pill-active-glow: rgba(15, 23, 42, 0.1);
+
+    --input-bg: rgba(15, 23, 42, 0.04);
+    --input-color: #0f172a;
+    --select-bg: rgba(15, 23, 42, 0.04);
+    --select-color: #0f172a;
+    --select-hover-border: rgba(15, 23, 42, 0.15);
+    --select-hover-bg: rgba(255, 255, 255, 0.95);
+
+    --btn-secondary-bg: rgba(15, 23, 42, 0.03);
+    --btn-secondary-border: rgba(15, 23, 42, 0.06);
+    --btn-secondary-hover-bg: rgba(15, 23, 42, 0.08);
+    --btn-secondary-hover-border: rgba(15, 23, 42, 0.15);
+}
+
 body{
     min-height:100vh;
+    background:var(--bg-gradient);
+    transition: background 0.4s ease;
+}
+
+.dashboard-wrapper {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 30px 24px;
+}
+
+.dashboard-header {
+    position: sticky;
+    top: 20px;
+    z-index: 100;
+    background: var(--header-bg);
+    backdrop-filter: blur(15px);
+    border: 1px solid var(--container-border);
+    padding: 12px 24px;
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    transition: background 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+.brand-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.brand-logo {
+    font-size: 28px;
+    animation: float 3s ease-in-out infinite;
+}
+
+.brand-title {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin: 0;
+    color: var(--text-color);
+    transition: color 0.4s ease;
+}
+
+.brand-subtitle {
+    font-size: 11px;
+    color: var(--secondary-text);
+    font-weight: 500;
+    margin: 0;
+    transition: color 0.4s ease;
+}
+
+.theme-toggle-pill{
     display:flex;
-    justify-content:center;
-    align-items:center;
-    background:linear-gradient(
-        135deg,
-        #0f172a,
-        #1e293b,
-        #334155
-    );
+    background:var(--pill-bg);
+    border:1px solid var(--pill-border);
+    border-radius:20px;
+    padding:3px;
+    transition: background 0.4s ease, border-color 0.4s ease;
 }
 
-.container{
-    width:420px;
-    padding:30px;
-    border-radius:25px;
-
-    background:rgba(255,255,255,0.1);
-    backdrop-filter:blur(18px);
-
-    border:1px solid rgba(255,255,255,0.2);
-
-    box-shadow:
-        0 8px 32px rgba(0,0,0,0.3);
-
-    color:white;
-}
-
-h1{
-    text-align:center;
-    margin-bottom:25px;
-}
-
-.input-group{
-    margin-bottom:20px;
-}
-
-input{
-    width:100%;
-    padding:15px;
+.theme-pill-btn{
     border:none;
+    background:transparent;
+    border-radius:17px;
+    padding:5px 12px;
+    font-size:11px;
+    font-weight:600;
+    color:var(--pill-inactive-color);
+    cursor:pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     outline:none;
-    border-radius:12px;
-    font-size:16px;
-}
-
-.currency-row{
     display:flex;
     align-items:center;
-    justify-content:space-between;
-    gap:10px;
+    gap:4px;
 }
 
-select{
-    width:45%;
-    padding:12px;
-    border:none;
-    border-radius:12px;
-    font-size:15px;
-    cursor:pointer;
+.theme-pill-btn.active{
+    background:var(--pill-active-bg);
+    color:var(--pill-active-color);
+    box-shadow:0 2px 10px var(--pill-active-glow);
 }
 
-.swap-btn{
-    width:50px;
-    height:50px;
-    border:none;
-    border-radius:50%;
-    background:#38bdf8;
-    color:white;
-    font-size:22px;
-    cursor:pointer;
-    transition:0.3s;
+.theme-pill-btn:hover:not(.active){
+    opacity: 0.85;
 }
 
-.swap-btn:hover{
-    transform:rotate(180deg);
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
 }
 
-.convert-btn{
-    width:100%;
-    margin-top:20px;
-    padding:15px;
-    border:none;
-    border-radius:12px;
-    background:#22c55e;
-    color:white;
-    font-size:17px;
-    font-weight:600;
-    cursor:pointer;
+@media (max-width: 768px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
 }
 
-.convert-btn:hover{
-    opacity:0.9;
+.dashboard-card {
+    background: var(--container-bg);
+    border: 1px solid var(--container-border);
+    border-radius: 20px;
+    padding: 24px;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    transition: background 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
-.rate{
-    margin-top:20px;
-    text-align:center;
-    color:#cbd5e1;
+.card-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-color);
+    margin-bottom: 16px;
+    letter-spacing: -0.3px;
+    transition: color 0.4s ease;
 }
 
-.result{
-    margin-top:20px;
-    padding:15px;
-    border-radius:15px;
-    background:rgba(255,255,255,0.1);
-    text-align:center;
-    font-size:20px;
-    font-weight:600;
+/* CONVERTER CARD */
+
+.converter-input-block {
+    margin-bottom: 16px;
 }
 
-.footer{
-    margin-top:15px;
-    text-align:center;
-    font-size:13px;
-    color:#cbd5e1;
+.converter-label {
+    display: block;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--secondary-text);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+    transition: color 0.4s ease;
 }
 
-.logo{
-    font-size:70px;
-    text-align:center;
-    margin-bottom:10px;
-    animation:float 3s ease-in-out infinite;
+.converter-input-wrapper {
+    background: var(--input-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 2px;
+    transition: border-color 0.3s ease, background 0.4s ease;
 }
 
-.tagline{
-    text-align:center;
-    color:#cbd5e1;
-    margin-bottom:25px;
-    font-size:14px;
-    letter-spacing:1px;
+.converter-input-wrapper:focus-within {
+    border-color: var(--swap-btn-bg);
+}
+
+.converter-input-wrapper input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text-color);
+    padding: 10px 12px;
+    font-size: 15px;
+    font-weight: 500;
+    transition: color 0.4s ease;
+}
+
+.converter-row-block {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.select-wrapper {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    font-size: 14px;
+    cursor: pointer;
+    background: var(--select-bg);
+    color: var(--select-color);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease, background 0.4s ease, color 0.4s ease;
+    outline: none;
+}
+
+select:hover {
+    border-color: var(--select-hover-border);
+    background: var(--select-hover-bg);
+}
+
+select option {
+    background: white;
+    color: #0f172a;
+}
+
+.swap-btn {
+    width: 44px;
+    height: 44px;
+    border: none;
+    border-radius: 50%;
+    background: var(--swap-btn-bg);
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    flex-shrink: 0;
+    margin-top: 20px; /* Aligns visually with dropdown inputs */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 12px rgba(56, 189, 248, 0.15);
+    transition: transform 0.3s ease, background 0.4s ease, color 0.4s ease, box-shadow 0.4s ease;
+}
+
+.swap-btn:hover {
+    transform: rotate(180deg);
+}
+
+.result-card {
+    margin-top: 15px;
+    padding: 15px;
+    border-radius: 16px;
+    background: var(--result-bg);
+    border: 1px solid var(--card-border);
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+    transition: all 0.3s ease, background 0.4s ease, border-color 0.4s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.result-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 16px;
+    background: radial-gradient(circle at top right, var(--result-glow), transparent 60%);
+    pointer-events: none;
+}
+
+.result-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px var(--result-glow);
+}
+
+.result-input-line {
+    font-size: 15px;
+    color: var(--secondary-text);
+    font-weight: 500;
+    transition: color 0.4s ease;
+}
+
+.result-arrow {
+    font-size: 16px;
+    color: var(--swap-btn-bg);
+    margin: 2px 0;
+    font-weight: bold;
+    animation: bounce 2s infinite;
+}
+
+.result-converted-line {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--text-color);
+    letter-spacing: -0.5px;
+    transition: color 0.4s ease;
+}
+
+.result-info-group {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--card-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    color: var(--secondary-text);
+    transition: border-color 0.4s ease;
+}
+
+.result-rate-line {
+    font-weight: 500;
+}
+
+.result-update-time {
+    font-style: italic;
+    opacity: 0.85;
+}
+
+.convert-btn {
+    width: 100%;
+    margin-top: 15px;
+    padding: 12px;
+    border: 1px solid var(--btn-secondary-border);
+    border-radius: 12px;
+    background: var(--btn-secondary-bg);
+    color: var(--text-color);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease, background 0.4s ease, color 0.4s ease, border-color 0.4s ease;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+}
+
+.convert-btn:hover {
+    background: var(--btn-secondary-hover-bg);
+    border-color: var(--btn-secondary-hover-border);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+/* CHART CARD */
+
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.chart-header .card-title {
+    margin-bottom: 0;
+}
+
+.chart-tabs {
+    display: flex;
+    background: var(--pill-bg);
+    border: 1px solid var(--pill-border);
+    border-radius: 10px;
+    padding: 2px;
+    transition: background 0.4s ease, border-color 0.4s ease;
+}
+
+.chart-tab {
+    background: transparent;
+    border: none;
+    border-radius: 7px;
+    padding: 5px 12px;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--pill-inactive-color);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+.chart-tab.active {
+    background: var(--pill-active-bg);
+    color: var(--pill-active-color);
+    box-shadow: 0 2px 6px var(--pill-active-glow);
+}
+
+.chart-container {
+    position: relative;
+    width: 100%;
+    height: 290px;
+}
+
+/* MULTI-CURRENCY CARD */
+
+.multi-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 8px;
+}
+
+@media (max-width: 580px) {
+    .multi-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+@media (max-width: 400px) {
+    .multi-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.multi-item {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+    transition: all 0.3s ease, background 0.4s ease, border-color 0.4s ease;
+}
+
+.multi-item:hover {
+    transform: translateY(-4px);
+    background: var(--btn-secondary-hover-bg);
+    border-color: var(--btn-secondary-hover-border);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+}
+
+.multi-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.multi-flag {
+    font-size: 18px;
+}
+
+.multi-currency-code {
+    color: var(--text-color);
+    font-weight: 600;
+}
+
+.multi-value {
+    font-size: 15px;
+    font-weight: 750;
+    color: var(--text-color);
+    transition: color 0.4s ease;
+}
+
+/* AI INSIGHTS CARD (2X2 METRICS GRID) */
+
+.insights-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 8px;
+}
+
+.insight-metric-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    padding: 12px 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 6px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+    transition: all 0.3s ease, background 0.4s ease, border-color 0.4s ease;
+}
+
+.insight-metric-card:hover {
+    transform: translateY(-2px);
+    background: var(--btn-secondary-hover-bg);
+    border-color: var(--btn-secondary-hover-border);
+}
+
+.insight-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--secondary-text);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    transition: color 0.4s ease;
+}
+
+.insight-value {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-color);
+    line-height: 1.3;
+    transition: color 0.4s ease;
+}
+
+.highlight-green {
+    color: #22c55e;
+}
+
+.highlight-red {
+    color: #ef4444;
+}
+
+.highlight-blue {
+    color: #38bdf8;
+}
+
+[data-theme="light"] .highlight-blue {
+    color: #0284c7;
+}
+
+/* RECENT CONVERSIONS (FULL WIDTH CARD) */
+
+.full-width-card {
+    grid-column: 1 / -1;
+}
+
+@media (max-width: 768px) {
+    .full-width-card {
+        grid-column: auto;
+    }
+}
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.history-header h3 {
+    color: var(--text-color);
+    font-size: 16px;
+    font-weight: 700;
+    transition: color 0.4s ease;
+}
+
+.clear-btn {
+    background: rgba(239, 68, 68, 0.12);
+    border: none;
+    border-radius: 8px;
+    color: #f87171;
+    padding: 6px 12px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+#historyList {
+    list-style: none;
+}
+
+#historyList li {
+    padding: 12px 18px;
+    margin-bottom: 10px;
+    border-radius: 12px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    color: var(--text-color);
+    font-size: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.history-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.history-flag {
+    font-size: 16px;
+}
+
+.history-amount {
+    font-weight: 500;
+}
+
+.history-arrow {
+    color: var(--secondary-text);
+    font-weight: bold;
+}
+
+.history-currency {
+    font-weight: 500;
+    color: var(--secondary-text);
+}
+
+.history-right {
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--text-color);
+}
+
+#historyList li.no-history {
+    text-align: center;
+    color: var(--secondary-text);
+    font-style: italic;
+    background: transparent;
+    border: none;
+    margin-bottom: 0;
+    padding: 16px 0;
+    display: block;
+    box-shadow: none;
+}
+
+.footer {
+    margin-top: 24px;
+    text-align: center;
+    font-size: 11px;
+    color: var(--secondary-text);
+    transition: color 0.4s ease;
+    opacity: 0.7;
 }
 
 @keyframes float{
-    0%{
-        transform:translateY(0);
-    }
+    0%{ transform:translateY(0); }
+    50%{ transform:translateY(-4px); }
+    100%{ transform:translateY(0); }
+}
 
-    50%{
-        transform:translateY(-8px);
-    }
-
-    100%{
-        transform:translateY(0);
-    }
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(2px); }
 }
 
 </style>
+
 </head>
+
 
 <body>
 
-<div class="container">
+<div class="dashboard-wrapper">
 
-    <div class="logo">
-        💱 
-    </div>
+    <header class="dashboard-header">
+        <div class="brand-group">
+            <span class="brand-logo">💱</span>
+            <div class="brand-text">
+                <h1 class="brand-title">CurrencyPilot AI</h1>
+                <p class="brand-subtitle">Real-Time Currency Analytics Dashboard</p>
+            </div>
+        </div>
+        <div class="theme-toggle-pill" id="themeTogglePill">
+            <button class="theme-pill-btn" id="themeBtnLight">☀ Light</button>
+            <button class="theme-pill-btn" id="themeBtnDark">🌙 Dark</button>
+        </div>
+    </header>
 
-    <h1>CurrencyPilot</h1>
+    <div class="dashboard-grid">
 
-    <p class="tagline">
-        AI-Powered Real-Time Currency Converter
-    </p>
-    
+        <!-- ROW 1 - LEFT CARD: Currency Converter -->
+        <div class="dashboard-card converter-card">
+            <h2 class="card-title">💱 Currency Converter</h2>
+            
+            <div class="converter-inputs">
+                <div class="converter-input-block">
+                    <label class="converter-label">You Send</label>
+                    <div class="converter-input-wrapper">
+                        <input type="number" id="amount" placeholder="Enter Amount">
+                    </div>
+                </div>
+                
+                <div class="converter-row-block">
+                    <div class="select-wrapper">
+                        <label class="converter-label">From</label>
+                        <select id="fromCurrency"></select>
+                    </div>
+                    
+                    <button class="swap-btn" id="swapBtn">⇄</button>
+                    
+                    <div class="select-wrapper">
+                        <label class="converter-label">To</label>
+                        <select id="toCurrency"></select>
+                    </div>
+                </div>
+            </div>
 
-    <div class="input-group">
-        <input
-            type="number"
-            id="amount"
-            placeholder="Enter Amount"
-        >
-    </div>
+            <div class="result-card" id="resultCard">
+                <div class="result-input-line" id="resultInputLine">Amount & From Currency</div>
+                <div class="result-arrow">↓</div>
+                <div class="result-converted-line" id="resultConvertedLine">Conversion Result</div>
+                <div class="result-info-group">
+                    <div class="result-rate-line" id="resultRateLine">Exchange Rate</div>
+                    <div class="result-update-time" id="resultUpdateTime">Updated just now</div>
+                </div>
+            </div>
 
-    <div class="currency-row">
+            <button class="convert-btn" id="convertBtn">
+                Convert Instantly ⚡
+            </button>
+        </div>
 
-        <select id="fromCurrency"></select>
+        <!-- ROW 1 - RIGHT CARD: Exchange Rate Chart -->
+        <div class="dashboard-card chart-card">
+            <div class="chart-header">
+                <h2 class="card-title">📈 Exchange Rate Trends</h2>
+                <div class="chart-tabs">
+                    <button class="chart-tab active" data-timeframe="7">7D</button>
+                    <button class="chart-tab" data-timeframe="30">30D</button>
+                    <button class="chart-tab" data-timeframe="90">90D</button>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="trendsChart"></canvas>
+            </div>
+        </div>
 
-        <button class="swap-btn" id="swapBtn">
-            ⇄
-        </button>
+        <!-- ROW 2 - LEFT CARD: Multi Currency Conversion -->
+        <div class="dashboard-card multi-currency-card">
+            <h2 class="card-title">🌍 Multi Currency Conversion</h2>
+            <div class="multi-grid" id="multiGrid">
+                <!-- Populated dynamically via JS -->
+            </div>
+        </div>
 
-        <select id="toCurrency"></select>
+        <!-- ROW 2 - RIGHT CARD: AI Market Insights -->
+        <div class="dashboard-card insights-card">
+            <h2 class="card-title">🤖 AI Market Insights</h2>
+            <div class="insights-grid">
+                <div class="insight-metric-card">
+                    <div class="insight-label">🟢 Market Sentiment</div>
+                    <div class="insight-value" id="insightTrend">Bullish</div>
+                </div>
+                <div class="insight-metric-card">
+                    <div class="insight-label">🏆 Best Performer</div>
+                    <div class="insight-value highlight-green" id="insightBest">JPY (+1.2%)</div>
+                </div>
+                <div class="insight-metric-card">
+                    <div class="insight-label">📉 Worst Performer</div>
+                    <div class="insight-value highlight-red" id="insightWorst">TRY (-2.4%)</div>
+                </div>
+                <div class="insight-metric-card">
+                    <div class="insight-label">⚡ Suggested Pair</div>
+                    <div class="insight-value highlight-blue" id="insightSuggested">USD → EUR</div>
+                </div>
+            </div>
+        </div>
 
-    </div>
+        <!-- ROW 3 - FULL WIDTH CARD: Recent Conversions -->
+        <div class="dashboard-card full-width-card history-container">
+            <div class="history-header">
+                <h3>Recent Conversions</h3>
+                <button class="clear-btn" id="clearBtn">🗑 Clear</button>
+            </div>
+            <ul id="historyList"></ul>
+        </div>
 
-    <button class="convert-btn" id="convertBtn">
-        Convert Currency
-    </button>
-
-    <div class="rate" id="rateInfo"></div>
-
-    <div class="result" id="result">
-        Conversion Result
     </div>
 
     <div class="footer">
@@ -223,4 +842,5 @@ select{
 <script src="script.js"></script>
 
 </body>
+
 </html>
