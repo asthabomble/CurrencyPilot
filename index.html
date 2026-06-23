@@ -299,6 +299,206 @@ select option {
     color: #0f172a;
 }
 
+/* Custom Searchable Dropdown CSS */
+.custom-select-container {
+    position: relative;
+    width: 100%;
+}
+
+.custom-select-trigger {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    background: var(--select-bg);
+    color: var(--select-color);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease, background 0.4s ease, color 0.4s ease, border-color 0.3s ease;
+    outline: none;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    text-align: left;
+}
+
+.custom-select-trigger:hover,
+.custom-select-container.open .custom-select-trigger {
+    border-color: var(--select-hover-border);
+    background: var(--select-hover-bg);
+}
+
+.custom-select-container.open .custom-select-trigger {
+    border-color: var(--swap-btn-bg);
+    box-shadow: 0 0 10px var(--result-glow);
+}
+
+.selected-flag {
+    font-size: 16px;
+    line-height: 1;
+}
+
+.selected-code {
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.selected-name {
+    font-size: 12px;
+    color: var(--secondary-text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-right: auto; /* Push chevron to the far right */
+}
+
+.chevron-arrow {
+    font-size: 12px;
+    color: var(--secondary-text);
+    transition: transform 0.25s ease;
+}
+
+.custom-select-container.open .chevron-arrow {
+    transform: rotate(180deg);
+}
+
+/* Dropdown Menu Panel */
+.custom-select-dropdown {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: var(--header-bg);
+    border: 1px solid var(--container-border);
+    border-radius: 16px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(20px);
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    
+    /* Animation state - closed by default */
+    opacity: 0;
+    transform: translateY(-8px) scale(0.97);
+    pointer-events: none;
+    transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1), transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.custom-select-container.open .custom-select-dropdown {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: all;
+}
+
+/* Search Bar Wrapper & Input */
+.search-input-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.custom-select-search {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    background: var(--input-bg);
+    color: var(--text-color);
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.custom-select-search:focus {
+    border-color: var(--swap-btn-bg);
+    background: var(--select-hover-bg);
+    box-shadow: 0 0 8px var(--result-glow);
+}
+
+/* Options List */
+.custom-select-options {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-height: 240px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    /* Custom scrollbar */
+    scrollbar-width: thin;
+    scrollbar-color: var(--card-border) transparent;
+}
+
+.custom-select-options::-webkit-scrollbar {
+    width: 6px;
+}
+
+.custom-select-options::-webkit-scrollbar-thumb {
+    background-color: var(--card-border);
+    border-radius: 3px;
+}
+
+/* Single Option Item */
+.custom-select-option {
+    padding: 8px 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.custom-select-option:hover,
+.custom-select-option.highlighted {
+    background: var(--btn-secondary-hover-bg);
+    color: var(--text-color);
+}
+
+.custom-select-option.selected {
+    background: var(--swap-btn-bg);
+}
+
+.custom-select-option.selected .option-code,
+.custom-select-option.selected .option-name,
+.custom-select-option.selected .option-flag {
+    color: var(--pill-active-color) !important;
+}
+
+.option-flag {
+    font-size: 18px;
+    line-height: 1;
+}
+
+.option-details {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-width: 0; /* allows text truncation */
+}
+
+.option-code {
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--text-color);
+}
+
+.option-name {
+    font-size: 11px;
+    color: var(--secondary-text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .swap-btn {
     width: 44px;
     height: 44px;
@@ -749,14 +949,42 @@ select option {
                 <div class="converter-row-block">
                     <div class="select-wrapper">
                         <label class="converter-label">From</label>
-                        <select id="fromCurrency"></select>
+                        <select id="fromCurrency" style="display: none;"></select>
+                        <div class="custom-select-container" id="fromCurrencySelect">
+                            <button class="custom-select-trigger" aria-haspopup="listbox" aria-expanded="false" type="button">
+                                <span class="selected-flag">🇺🇸</span>
+                                <span class="selected-code">USD</span>
+                                <span class="selected-name">US Dollar</span>
+                                <span class="chevron-arrow">▼</span>
+                            </button>
+                            <div class="custom-select-dropdown">
+                                <div class="search-input-wrapper">
+                                    <input type="text" class="custom-select-search" placeholder="Search currency...">
+                                </div>
+                                <ul class="custom-select-options" role="listbox"></ul>
+                            </div>
+                        </div>
                     </div>
                     
                     <button class="swap-btn" id="swapBtn">⇄</button>
                     
                     <div class="select-wrapper">
                         <label class="converter-label">To</label>
-                        <select id="toCurrency"></select>
+                        <select id="toCurrency" style="display: none;"></select>
+                        <div class="custom-select-container" id="toCurrencySelect">
+                            <button class="custom-select-trigger" aria-haspopup="listbox" aria-expanded="false" type="button">
+                                <span class="selected-flag">🇮🇳</span>
+                                <span class="selected-code">INR</span>
+                                <span class="selected-name">Indian Rupee</span>
+                                <span class="chevron-arrow">▼</span>
+                            </button>
+                            <div class="custom-select-dropdown">
+                                <div class="search-input-wrapper">
+                                    <input type="text" class="custom-select-search" placeholder="Search currency...">
+                                </div>
+                                <ul class="custom-select-options" role="listbox"></ul>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -39,6 +39,18 @@ const currencySymbols = {
     MYR: "RM", PHP: "₱", PKR: "₨", BDT: "৳", LKR: "₨", NPR: "₨"
 };
 
+// Currency names mapping for searchable dropdown lists
+const currencyNames = {
+    USD: "US Dollar", INR: "Indian Rupee", EUR: "Euro", GBP: "British Pound", JPY: "Japanese Yen",
+    AUD: "Australian Dollar", CAD: "Canadian Dollar", CHF: "Swiss Franc", CNY: "Chinese Yuan",
+    SGD: "Singapore Dollar", HKD: "Hong Kong Dollar", NZD: "New Zealand Dollar", SEK: "Swedish Krona",
+    KRW: "South Korean Won", NOK: "Norwegian Krone", MXN: "Mexican Peso", BRL: "Brazilian Real",
+    RUB: "Russian Ruble", ZAR: "South African Rand", TRY: "Turkish Lira", AED: "UAE Dirham",
+    SAR: "Saudi Riyal", THB: "Thai Baht", IDR: "Indonesian Rupiah", MYR: "Malaysian Ringgit",
+    PHP: "Philippine Peso", PKR: "Pakistani Rupee", BDT: "Bangladeshi Taka", LKR: "Sri Lankan Rupee",
+    NPR: "Nepalese Rupee"
+};
+
 function loadCurrencies(){
     currencies.forEach(currency => {
         const flag = currencyFlags[currency] || "🏳️";
@@ -57,6 +69,231 @@ function loadCurrencies(){
 
     fromCurrency.value = "USD";
     toCurrency.value = "INR";
+}
+
+// CUSTOM DROPDOWNS SETUP FUNCTION
+function setupCustomDropdown(containerId, hiddenSelectId) {
+    const container = document.getElementById(containerId);
+    const hiddenSelect = document.getElementById(hiddenSelectId);
+    if (!container || !hiddenSelect) return;
+
+    const trigger = container.querySelector(".custom-select-trigger");
+    const dropdown = container.querySelector(".custom-select-dropdown");
+    const searchInput = container.querySelector(".custom-select-search");
+    const optionsList = container.querySelector(".custom-select-options");
+
+    let highlightedIndex = -1;
+    let visibleOptions = [];
+
+    // Populate options list
+    function buildOptions() {
+        optionsList.innerHTML = "";
+        currencies.forEach(code => {
+            const flag = currencyFlags[code] || "🏳️";
+            const name = currencyNames[code] || "";
+            const isSelected = hiddenSelect.value === code;
+
+            const li = document.createElement("li");
+            li.className = `custom-select-option ${isSelected ? 'selected' : ''}`;
+            li.setAttribute("role", "option");
+            li.setAttribute("aria-selected", isSelected);
+            li.setAttribute("data-value", code);
+            
+            li.innerHTML = `
+                <span class="option-flag">${flag}</span>
+                <div class="option-details">
+                    <span class="option-code">${code}</span>
+                    <span class="option-name">${name}</span>
+                </div>
+            `;
+
+            li.addEventListener("click", (e) => {
+                e.stopPropagation();
+                selectOption(code);
+                closeDropdown();
+            });
+
+            optionsList.appendChild(li);
+        });
+        updateVisibleOptions();
+    }
+
+    // Select option and sync with hidden select
+    function selectOption(code) {
+        if (hiddenSelect.value !== code) {
+            hiddenSelect.value = code;
+            hiddenSelect.dispatchEvent(new Event("change"));
+        }
+    }
+
+    // Synchronize Trigger button UI with hidden select value
+    function syncTriggerUI() {
+        const val = hiddenSelect.value;
+        const flag = currencyFlags[val] || "🏳️";
+        const name = currencyNames[val] || "";
+        trigger.querySelector(".selected-flag").textContent = flag;
+        trigger.querySelector(".selected-code").textContent = val;
+        trigger.querySelector(".selected-name").textContent = name;
+
+        // Sync selected class
+        const options = optionsList.querySelectorAll(".custom-select-option");
+        options.forEach(opt => {
+            const isSelected = opt.getAttribute("data-value") === val;
+            opt.classList.toggle("selected", isSelected);
+            opt.setAttribute("aria-selected", isSelected);
+        });
+    }
+
+    // Listen to changes on the hidden select to update the custom UI (e.g. from swap button or initial prefill)
+    hiddenSelect.addEventListener("change", syncTriggerUI);
+
+    // Open dropdown panel
+    function openDropdown() {
+        // Close other custom dropdowns
+        document.querySelectorAll(".custom-select-container").forEach(c => {
+            if (c !== container) {
+                c.classList.remove("open");
+                c.querySelector(".custom-select-trigger").setAttribute("aria-expanded", "false");
+            }
+        });
+
+        container.classList.add("open");
+        trigger.setAttribute("aria-expanded", "true");
+        searchInput.value = "";
+        filterOptions("");
+        searchInput.focus();
+    }
+
+    // Close dropdown panel
+    function closeDropdown() {
+        container.classList.remove("open");
+        trigger.setAttribute("aria-expanded", "false");
+        highlightedIndex = -1;
+        removeHighlight();
+    }
+
+    function toggleDropdown() {
+        if (container.classList.contains("open")) {
+            closeDropdown();
+        } else {
+            openDropdown();
+        }
+    }
+
+    trigger.addEventListener("click", (e) => {
+        e.stopPropagation();
+        toggleDropdown();
+    });
+
+    // Close on click outside
+    document.addEventListener("click", (e) => {
+        if (!container.contains(e.target)) {
+            closeDropdown();
+        }
+    });
+
+    // Real-time search filter
+    function filterOptions(query) {
+        query = query.toLowerCase().trim();
+        const options = optionsList.querySelectorAll(".custom-select-option");
+        
+        options.forEach(opt => {
+            const code = opt.getAttribute("data-value").toLowerCase();
+            const name = (currencyNames[opt.getAttribute("data-value")] || "").toLowerCase();
+            
+            if (code.includes(query) || name.includes(query)) {
+                opt.style.display = "flex";
+            } else {
+                opt.style.display = "none";
+            }
+        });
+
+        updateVisibleOptions();
+        highlightedIndex = 0;
+        highlightOption();
+    }
+
+    function updateVisibleOptions() {
+        const options = optionsList.querySelectorAll(".custom-select-option");
+        visibleOptions = Array.from(options).filter(opt => opt.style.display !== "none");
+    }
+
+    searchInput.addEventListener("input", (e) => {
+        filterOptions(e.target.value);
+    });
+
+    searchInput.addEventListener("click", (e) => {
+        e.stopPropagation(); // Prevent closing dropdown on search bar clicks
+    });
+
+    // Keyboard navigation highlight
+    function highlightOption() {
+        removeHighlight();
+        if (visibleOptions.length === 0) return;
+        
+        if (highlightedIndex >= visibleOptions.length) {
+            highlightedIndex = 0;
+        } else if (highlightedIndex < 0) {
+            highlightedIndex = visibleOptions.length - 1;
+        }
+
+        const opt = visibleOptions[highlightedIndex];
+        opt.classList.add("highlighted");
+        opt.scrollIntoView({ block: "nearest" });
+    }
+
+    function removeHighlight() {
+        const options = optionsList.querySelectorAll(".custom-select-option");
+        options.forEach(opt => opt.classList.remove("highlighted"));
+    }
+
+    container.addEventListener("keydown", (e) => {
+        if (!container.classList.contains("open")) {
+            if (e.key === "ArrowDown" || e.key === "ArrowUp" || e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                openDropdown();
+            }
+            return;
+        }
+
+        switch (e.key) {
+            case "ArrowDown":
+                e.preventDefault();
+                highlightedIndex++;
+                highlightOption();
+                break;
+            case "ArrowUp":
+                e.preventDefault();
+                highlightedIndex--;
+                highlightOption();
+                break;
+            case "Enter":
+                e.preventDefault();
+                if (visibleOptions[highlightedIndex]) {
+                    const code = visibleOptions[highlightedIndex].getAttribute("data-value");
+                    selectOption(code);
+                    closeDropdown();
+                }
+                break;
+            case "Escape":
+                e.preventDefault();
+                closeDropdown();
+                trigger.focus();
+                break;
+            case "Tab":
+                closeDropdown();
+                break;
+        }
+    });
+
+    // Initial build and trigger sync
+    buildOptions();
+    syncTriggerUI();
+}
+
+function initCustomDropdowns() {
+    setupCustomDropdown("fromCurrencySelect", "fromCurrency");
+    setupCustomDropdown("toCurrencySelect", "toCurrency");
 }
 
 // HISTORY FUNCTIONS
@@ -451,6 +688,7 @@ async function convertCurrency(saveToHistory = false){
 // INITIALIZATION & LISTENERS
 
 loadCurrencies();
+initCustomDropdowns();
 displayHistory();
 loadTheme();
 
@@ -470,6 +708,10 @@ swapBtn.addEventListener("click", () => {
     let temp = fromCurrency.value;
     fromCurrency.value = toCurrency.value;
     toCurrency.value = temp;
+
+    // Dispatch change event to notify custom dropdowns of programmatic changes
+    fromCurrency.dispatchEvent(new Event("change"));
+    toCurrency.dispatchEvent(new Event("change"));
 
     // Swap performs conversion instantly and writes to history
     convertCurrency(true);
